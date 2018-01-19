@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div id="header">
+        <span class="logo">Bookmarks</span>
+        {% if request.user.is_authenticated %}
+            <ul class="menu">
+                <li {% if section == "dashboard" %}class="selected"{% endif %}>
+                    <a href="{% url 'dashboard' %}">My Dashboard</a>
+                </li>
+                <li {% if section == "images" %}class="selected"{% endif %}>
+                    <a href="#">Images</a>
+                </li>
+                <li {% if section == "people" %}class="selected"{% endif %}>
+                    <a href="#">People</a>
+                </li>
+            </ul>
+        {% endif %}
+        <span class="user">
+            {% if request.user.is_authenticated %}
+                Hello {{ request.user.username }},
+                <a href="{% url 'logout_then_login' %}">Logout</a>  <!-- 这里写logout 或者logout_then_login 都可以-->
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </span>
+    </div>
+    <!-- 添加操作提示 -->
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close"></a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <!-- 正文 -->
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
