@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'images',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -147,4 +148,10 @@ AUTHENTICATION_BACKENDS ={
     'django.contrib.auth.backends.ModelBackend',   # 这个是通过用户名登录的认证后台，加在这里保证用户名仍然可以用来认证登录
     'account.authentication.EmailAuthBackend',   # email认证登录
     'social_core.backends.qq.QQOAuth2'   # qq认证
+}
+
+# 为指定的模型添加get_absolute_url方法
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: reverse_lazy('user_detail',
+                                        args=[u.username])
 }

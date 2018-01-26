@@ -1,0 +1,15 @@
+{% load thumbnail %}   <!-- 这里不用继承base模板，因为这个内容是作为ajax请求返回的片段数据，接在原有html页面里的 -->
+{% for image in images %}
+    <div class="image">
+        <a href="{{ image.get_absolute_url }}">
+            {% thumbnail image.image "300x300" crop="100%" as im %}
+                <a href="{{ image.get_absolute_url }}">
+                    <img src="{{ im.url }}">
+                </a>
+            {% endthumbnail %}
+        </a>
+        <div class="info">
+            <a href="{{ image.get_absolute_url }}" class="title">{{ image.title }}</a>
+        </div>
+    </div>
+{% endfor %}

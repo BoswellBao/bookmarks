@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ image.title }}{% endblock %}
+{% block content %}
+    <h1>{{ image.title }}</h1>
+    {% load thumbnail %}
+    {% thumbnail image.image "300" as im %}
+        <a href="{{ image.url }}">
+            <img src="{{ im.url }}">
+        </a>
+    {% endthumbnail %}
+    {% with total_likes=image.user_like.count user_like=image.user_like.all %}
+        <div class="image-info">
+            <div>
+                <span class="count">
+                    <span class="total">{{ total_likes }}</span>
+                    like{{ total_likes|pluralize }}
+                </span>
+                <a href="#" data-id="{{ image.id }}" data-action="{% if request.user in user_like %}un{% endif %}like" class="like button">
+                    {% if request.user in user_like %}
+                        Unlike
+                    {% else %}
+                        Like
+                    {% endif %}
+                </a>
+            </div>
+            {{ image.description|linebreaks }}
+            <div class="image-likes">
+                {% for user in user_like %}
+                    <div>
+                        <img src="{{ user.profile.photo.url }}">
+                        <p>{{ user.username }}</p>
+                    </div>
+                    {% empty %}
+                    Nobody likes this image yet.
+                {% endfor %}
+            </div>
+        </div>
+    {% endwith %}
+{% endblock %}
+
+{% block domready %}
+    $('a.like').click(function(e){
+        e.preventDefault();   // 阻止a标签的默认行为，即阻止把我们带到别的地方
+        $.post("{% url 'images:like' %}",
+            {
+                id: $(this).data('id'),
+                action: $(this).data('action')
+            },
+            function(data){
+                if (data['status'] === 'ok'){
+                    var previous_action = $('a.like').data('action');
+                    // 根据现有action属性值改变其值
+                    $('a.like').data('action', previous_action == 'like' ? 'unlike' : 'like');
+                    // 根据现有文本值改变文本
+                    $('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
+                    // 更新喜欢的总数
+                    var previous_likes = parseInt($('span.count .total').text());
+                    $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+                }
+            }
+        );
+    })
+{% endblock %}

@@ -204,11 +204,12 @@ ul.messages li a.close {
     padding:20px 0;
     overflow:auto;
 }
+/*padding:10px 20px;*/
 .count {
     color:#aaa;
     border:3px solid #bbb;
     border-radius:26px;
-    padding:10px 20px;
+    
     margin:20px 10px 0;
 }
 a.like, a.follow { float:right; margin-top:-8px; }
