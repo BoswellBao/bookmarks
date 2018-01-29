@@ -8,6 +8,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import ImageCreateForm
 from .models import Image
 from common.decorators import ajax_required
+from actions.utils import create_action
 
 
 @login_required
@@ -24,6 +25,7 @@ def image_create(request):
                 # 把当前用户依附到图片上
                 new_item.user = request.user
                 new_item.save()
+                create_action(request.user, '给图片打标签', new_item)
                 new_item.user_like.add(new_item.user)
                 messages.success(request, 'Image added successfully')
                 # 重定向到新添加图片的详细信息页面

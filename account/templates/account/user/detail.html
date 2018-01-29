@@ -13,8 +13,7 @@
                     <span class="total">{{ total_followers }}</span>
                     follower{{ total_followers|pluralize }}
                 </span>
-                <a href="#" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" class="followbutton"
-                    {% if request.user == user %}hidden="true"{% endif %}>
+                <a href="#" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" class="followbutton" {% if request.user == user %}hidden="true"{% endif %}>         
                     {% if request.user in user.followers.all %}
                         Unfollow
                     {% else %}
@@ -27,4 +26,25 @@
             {% endwith %}
         </div>
     </div>
+{% endblock %}
+
+{% block domready %}
+    $('a.followbutton').click(function(e){
+        e.preventDefault();
+        $.post("{% url 'user_follow' %}",
+            {
+                id: $(this).data('id'),
+                action: $(this).data('action')
+            },        
+            function(data){
+                if(data['status'] === 'ok'){
+                    var previous_action = $('a.followbutton').data('action');
+                    $('a.followbutton').data('action', previous_action === 'follow' ? 'unfollow' : 'follow');
+                    $('a.followbutton').text(previous_action === 'follow' ? 'Unfollow' : 'Follow');
+                    var previous_followers = parseInt($('span.count .total').text());
+                    $('span.count .total').text(previous_action === 'follow' ? previous_followers + 1 : previous_followers - 1);
+                }
+            }
+        );
+    });
 {% endblock %}
